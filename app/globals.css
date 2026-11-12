@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+/* Palette comes from seaborn, the plotting library behind most of the work shown here.
+   Each token is light-dark(light, dark). The dark steps were chosen for the dark surface, not inverted. */
+@theme {
+  --color-paper: light-dark(#ffffff, #16161d);
+  --color-panel: light-dark(#eaeaf2, #23232f); /* seaborn darkgrid plot face */
+  --color-ink: light-dark(#262626, #e6e6ec); /* seaborn text */
+  --color-muted: light-dark(#5b5d6b, #a3a4b3);
+  --color-link: light-dark(#3a5a91, #9db5e3);
+  --color-learned: light-dark(#4c72b0, #6a92e0); /* seaborn blue */
+  --color-memorized: light-dark(#c4642a, #d9773a); /* seaborn orange, darkened to reach 3:1 on the panel */
+  --font-sans: var(--font-atkinson), system-ui, sans-serif;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* The theme follows the system setting until the header toggle sets data-theme.
+   The build rewrites light-dark() into plain custom properties, so older browsers get both themes too. */
+:root {
+  color-scheme: light dark;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+a,
+button {
+  touch-action: manipulation;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-link);
+  outline-offset: 3px;
+}
+
+@utility link {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      text-decoration-thickness: 2px;
+    }
+  }
+}
+
+/* Hero chart: both lines are revealed left to right at constant speed, the way training steps pass */
+@keyframes train {
+  from {
+    clip-path: inset(-8px 100% -8px 0);
+  }
+  to {
+    clip-path: inset(-8px -8px -8px 0);
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .plot-lines {
+    animation: train 2s linear both;
+  }
+  /* Switching metric morphs each line into its new shape, so the eye can follow which run is which */
+  .plot-lines path {
+    transition: d 500ms var(--ease-in-out);
+  }
+  .plot-end {
+    animation: appear 300ms var(--ease-out) 1.9s both;
+  }
+  /* Axis and end labels land in the second half of the morph, together with the lines */
+  .plot-swap {
+    animation: appear 250ms var(--ease-out) 250ms both;
+  }
+}
+
+/* The theme switch crossfades through a view transition; without motion it swaps at once */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

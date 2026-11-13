@@ -1,26 +1,37 @@
 import type { Metadata } from "next";
-import { Atkinson_Hyperlegible_Next } from "next/font/google";
+import { Atkinson_Hyperlegible_Next, Cormorant_Garamond, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const atkinson = Atkinson_Hyperlegible_Next({ variable: "--font-atkinson", subsets: ["latin"] });
+const cormorant = Cormorant_Garamond({
+  weight: ["600", "700"],
+  variable: "--font-display",
+  subsets: ["latin"],
+});
+const atkinson = Atkinson_Hyperlegible_Next({
+  variable: "--font-atkinson",
+  subsets: ["latin"],
+});
+const jetbrains = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
-  title: "Ali Noor, AI/ML engineer",
+  title: "Ali Noor — Codex · AI/ML & Software Engineering",
   description:
-    "Machine learning research, LLM agents and LLM security projects by Ali Noor, a computer science undergraduate at COMSATS University Islamabad.",
+    "Machine learning research, deterministic AI agents, LLM security, and first-principles software engineering by Ali Noor, a computer science undergraduate at COMSATS University Islamabad.",
 };
-
-// Runs before first paint so a saved theme choice never flashes the other theme
-const restoreTheme = `try{const t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch{}`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // The script above sets data-theme before React hydrates, which React would otherwise report as a mismatch
-    <html lang="en" className={atkinson.variable} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: restoreTheme }} />
-      </head>
-      <body className="bg-paper font-sans text-lg/[1.55] text-ink antialiased">{children}</body>
+    <html
+      lang="en"
+      className={`${cormorant.variable} ${atkinson.variable} ${jetbrains.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="bg-[#16100b] font-sans text-lg/[1.55] text-[#f4ead5] antialiased selection:bg-[#d4af37]/25 selection:text-white">
+        {children}
+      </body>
     </html>
   );
 }

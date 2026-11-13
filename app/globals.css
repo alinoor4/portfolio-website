@@ -1,29 +1,27 @@
 @import "tailwindcss";
 
-/* Palette comes from seaborn, the plotting library behind most of the work shown here.
-   Each token is light-dark(light, dark). The dark steps were chosen for the dark surface, not inverted. */
+/* Florentine walnut, aged vellum, gilded brass, Venetian sanguine, and lapis lazuli palette. */
 @theme {
-  --color-paper: light-dark(#ffffff, #16161d);
-  --color-panel: light-dark(#eaeaf2, #23232f); /* seaborn darkgrid plot face */
-  --color-ink: light-dark(#262626, #e6e6ec); /* seaborn text */
-  --color-muted: light-dark(#5b5d6b, #a3a4b3);
-  --color-link: light-dark(#3a5a91, #9db5e3);
-  --color-learned: light-dark(#4c72b0, #6a92e0); /* seaborn blue */
-  --color-memorized: light-dark(#c4642a, #d9773a); /* seaborn orange, darkened to reach 3:1 on the panel */
+  --color-walnut: #16100b;
+  --color-walnut-deep: #110c08;
+  --color-walnut-surface: #1f160f;
+  --color-vellum: #f4ead5;
+  --color-vellum-muted: #c8b89b;
+  --color-gold: #d4af37;
+  --color-gold-bright: #e8c97a;
+  --color-sanguine: #d96b43;
+  --color-sanguine-soft: #e07a5f;
+  --color-lapis: #5c92c8;
+  --color-lapis-bright: #89b4e3;
+  --color-sepia: #5c432d;
+  --font-display: var(--font-display), Georgia, serif;
   --font-sans: var(--font-atkinson), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-/* The theme follows the system setting until the header toggle sets data-theme.
-   The build rewrites light-dark() into plain custom properties, so older browsers get both themes too. */
 :root {
-  color-scheme: light dark;
-}
-:root[data-theme="light"] {
-  color-scheme: light;
-}
-:root[data-theme="dark"] {
   color-scheme: dark;
 }
 
@@ -42,12 +40,12 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-link);
+  outline: 2px solid #d4af37;
   outline-offset: 3px;
 }
 
 @utility link {
-  color: var(--color-link);
+  color: #e8c97a;
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
@@ -58,8 +56,14 @@ button {
   }
 }
 
-/* Motion. One direction runs through the page: chart lines, bars and panels all draw in from the left,
-   the way training steps pass. Text only fades and rises a little. */
+.codex-drafting-grid {
+  background-image:
+    linear-gradient(to right, rgba(212, 175, 55, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(212, 175, 55, 0.045) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Codex & Renaissance mechanical motion */
 
 @keyframes train {
   from {
@@ -83,8 +87,96 @@ button {
   }
 }
 
-/* Scroll reveals. The Reveals script in controls.tsx sets data-reveal="hidden" on elements below the fold,
-   then clears it the first time each one scrolls into view. Without motion they only fade. */
+@keyframes turbineSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes compassSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes circuitFlow {
+  from {
+    stroke-dashoffset: 64;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes waterfallFlow {
+  from {
+    transform: translateY(-74px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes orbFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes jetPulse {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scaleY(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1.06);
+  }
+}
+
+@keyframes cloudDrift {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(18px);
+  }
+}
+
+@keyframes beamShimmer {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes panelSwap {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scroll reveals. Only elements below the fold get hidden on JS mount, then reveal cleanly. */
 [data-reveal] {
   transition: opacity 200ms linear;
 }
@@ -97,24 +189,68 @@ button {
     scroll-behavior: smooth;
   }
 
-  /* Hero text enters on load, headline first */
+  .turbine-spin {
+    animation: turbineSpin 28s linear infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .compass-spin {
+    animation: compassSpin 45s linear infinite reverse;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .circuit-flow {
+    stroke-dasharray: 10 6;
+    animation: circuitFlow 2.6s linear infinite;
+  }
+
+  .waterfall-stream {
+    animation: waterfallFlow 1.6s linear infinite;
+  }
+
+  .orb-float {
+    animation: orbFloat 6s ease-in-out infinite;
+    animation-delay: var(--float-delay, 0s);
+  }
+
+  .jet-pulse {
+    animation: jetPulse 2.4s ease-in-out infinite;
+    animation-delay: var(--jet-delay, 0s);
+    transform-box: fill-box;
+    transform-origin: bottom center;
+  }
+
+  .cloud-drift {
+    animation: cloudDrift 16s ease-in-out infinite;
+    animation-delay: var(--drift-delay, 0s);
+  }
+
+  .beam-shimmer {
+    animation: beamShimmer 7s ease-in-out infinite;
+  }
+
+  .panel-swap {
+    animation: panelSwap 220ms var(--ease-out) both;
+  }
+
+  /* Hero text enters on load */
   .hero-in {
     animation: rise 600ms var(--ease-out) both;
     animation-delay: calc(var(--i, 0) * 90ms);
   }
 
-  /* Hero chart: both lines are revealed left to right at constant speed */
+  /* Codex chart lines draw left to right */
   .plot-lines {
     animation: train 2s linear both;
   }
-  /* Switching metric morphs each line into its new shape, so the eye can follow which run is which */
   .plot-lines path {
     transition: d 500ms var(--ease-in-out);
   }
   .plot-end {
     animation: appear 300ms var(--ease-out) 1.9s both;
   }
-  /* Axis and end labels land in the second half of the morph, together with the lines */
   .plot-swap {
     animation: appear 250ms var(--ease-out) 250ms both;
   }
@@ -124,14 +260,14 @@ button {
       opacity 500ms var(--ease-out),
       transform 500ms var(--ease-out);
   }
-  /* The negative inset keeps focus rings at a panel's edge from being clipped once it is fully drawn */
   [data-wipe] {
     clip-path: inset(-8px);
     transition:
       clip-path 700ms var(--ease-out),
-      opacity 250ms linear;
+      opacity 250ms linear,
+      border-color 200ms ease,
+      box-shadow 200ms ease;
   }
-  /* Panels side by side draw in one after another; stacked on a phone they each arrive alone */
   @media (min-width: 48rem) {
     [data-reveal] {
       transition-delay: calc(var(--i, 0) * 70ms);
@@ -145,7 +281,6 @@ button {
     clip-path: inset(-8px 100% -8px -8px);
   }
 
-  /* Bars grow from the axis just after their panel starts to draw */
   .bar {
     transform-origin: left;
     transition: transform 600ms var(--ease-out);
@@ -156,13 +291,11 @@ button {
   }
 }
 
-/* Hiding happens off screen and must be instant, or the reveal would start from a half-hidden state */
 [data-reveal="hidden"],
 [data-reveal="hidden"] .bar {
   transition: none;
 }
 
-/* A page printed or saved as PDF before it was scrolled must still show everything */
 @media print {
   [data-reveal="hidden"],
   [data-reveal="hidden"] .bar {
@@ -172,8 +305,20 @@ button {
   }
 }
 
-/* The theme switch crossfades through a view transition; without motion it swaps at once */
 @media (prefers-reduced-motion: reduce) {
+  .turbine-spin,
+  .compass-spin,
+  .circuit-flow,
+  .waterfall-stream,
+  .orb-float,
+  .jet-pulse,
+  .cloud-drift,
+  .beam-shimmer,
+  .panel-swap,
+  .hero-in,
+  .plot-lines {
+    animation: none !important;
+  }
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {

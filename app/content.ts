@@ -33,29 +33,44 @@ export const weightNorm = {
   ],
 };
 
-type Project = {
+export type Project = {
   name: string;
   context?: string;
   summary: string;
+  // A project with results or bars gets a full-width panel; the rest share a grid
   results?: [value: string, label: string][];
+  bars?: { caption: string; rows: [label: string, value: number, display: string, highlight?: boolean][] };
   tools: string;
   links: [label: string, href: string][];
 };
 
-export const sections: { title: string; projects: Project[] }[] = [
+export const sections: { title: string; intro: string; projects: Project[] }[] = [
   {
     title: "Machine learning and research",
+    intro:
+      "I implement algorithms from scratch and run controlled experiments, so I can say why a model behaves the way it does.",
     projects: [
       {
         name: "Search ranking research at FlyRank",
         context: "ML internship capstone, 8 weeks",
         summary:
-          "I analyzed ranking signals for more than 10,000 URLs across 30 client domains, then trained a gradient boosting model that scores which pages are worth an editor's time. It beat industry heuristics by 14% on Precision@50, with GroupShuffleSplit validation to keep leakage out of the test set.",
+          "I analyzed ranking signals for more than 10,000 URLs across 30 client domains, then trained models to score which pages are worth an editor's time. Trained on 22 domains and tested on 8 they never saw, gradient boosting reached 100% Precision@50, against 86% for the rule-based baseline.",
         results: [
-          ["100%", "Precision@50"],
           ["0.9608", "ROC-AUC"],
-          ["9.3×", "Editorial ROI lift"],
+          ["9.3×", "More clicks per review hour"],
         ],
+        // From the results table in the paper: 2,019 held-out items, 19.86% base rate
+        bars: {
+          caption: "Precision@50 on 8 unseen client domains",
+          rows: [
+            ["Gradient boosting", 1, "100%", true],
+            ["Logistic regression", 1, "100%"],
+            ["Random forest", 0.94, "94%"],
+            ["Decision tree", 0.88, "88%"],
+            ["Rule baseline", 0.86, "86%"],
+            ["Base rate", 0.1986, "19.9%"],
+          ],
+        },
         tools: "Python and scikit-learn",
         links: [
           ["Read the paper", "https://alinoor4.github.io/flyrank-internship/"],
@@ -70,7 +85,17 @@ export const sections: { title: string; projects: Project[] }[] = [
         name: "Why weight decay causes grokking",
         context: "Replication of Power et al. (2022)",
         summary:
-          "I trained a 2-layer transformer on modular division and logged its total weight norm on every run. With weight decay, the norm falls from about 87 to under 30 at the same steps where validation accuracy jumps from chance to 100%. Without it, the norm keeps growing and the model never generalizes. The chart at the top of this page is that result.",
+          "I trained a 2-layer transformer on modular division and swept the weight decay. Too little and the model only memorizes. Too much and it can't fit the training set at all. At the right setting, the weight norm falls from about 87 to under 30 at the same steps where validation accuracy jumps from chance to 100%. The chart at the top of this page is that result.",
+        // Final validation accuracy per setting, from the sweep table in the repo's README
+        bars: {
+          caption: "Final validation accuracy by weight decay, after 6,000 steps",
+          rows: [
+            ["0.0", 0.017, "1.7%"],
+            ["0.1", 0.024, "2.4%"],
+            ["1.0", 1, "100%", true],
+            ["3.0", 0.12, "12%"],
+          ],
+        },
         tools: "PyTorch",
         links: [["View the code", "https://github.com/alinoor4/grokking-repo"]],
       },
@@ -92,12 +117,19 @@ export const sections: { title: string; projects: Project[] }[] = [
   },
   {
     title: "Agents and LLM security",
+    intro:
+      "In these systems plain code enforces the math, the budgets and the security boundaries, and the LLM does the reasoning.",
     projects: [
       {
         name: "Project Learner AI",
         context: "Team project, core contributor",
         summary:
           "A project-based coding education platform. Learners write each step of a generated project themselves, and only then do four AI agents explain the approach, streaming in parallel. I built the Learner Brain, an event-sourced graph of what each learner has mastered, and the Examiner Bot, which runs a multiple-choice round and then a rubric-scored viva. I also built project intake and an isolated in-browser sandbox for Python and JavaScript checkpoints, backed by more than 970 unit tests.",
+        results: [
+          ["4", "AI agents"],
+          ["970+", "Unit tests"],
+          ["14", "Documented invariants"],
+        ],
         tools: "Next.js, Supabase, Pyodide and d3-force",
         links: [
           ["Open the live app", "https://project-learner-ai-web.vercel.app"],
@@ -131,6 +163,7 @@ export const sections: { title: string; projects: Project[] }[] = [
   },
   {
     title: "Backend",
+    intro: "REST APIs and full-stack web apps built with Django.",
     projects: [
       {
         name: "Little Lemon restaurant API",

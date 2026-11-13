@@ -1,10 +1,81 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 const press = "transition-transform duration-150 ease-out active:scale-[0.97]";
 
-export function ThemeToggle() {
+// The underline grows from the left, the direction everything on this page draws in
+const navLink =
+  "relative px-1.5 py-2.5 text-base after:absolute after:inset-x-1.5 after:bottom-1.5 after:h-0.5 after:origin-left after:scale-x-0 after:bg-ink after:transition-transform after:duration-200 after:ease-out hover:after:scale-x-100 aria-[current=location]:after:scale-x-100 sm:px-3 sm:text-lg sm:after:inset-x-3";
+
+export function Nav() {
+  const [active, setActive] = useState("");
+
+  // The active section is the one crossing a thin band just below the middle of the viewport
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const { target, isIntersecting } of entries) {
+          setActive((current) => (isIntersecting ? target.id : current === target.id ? "" : current));
+        }
+      },
+      { rootMargin: "-60% 0px -35% 0px" },
+    );
+    for (const id of ["work", "about", "contact"]) {
+      const section = document.getElementById(id);
+      if (section) io.observe(section);
+    }
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <header className="sticky top-0 z-30 -mx-4 flex items-center justify-between bg-paper/85 px-4 py-2 backdrop-blur-md sm:-mx-8 sm:px-8">
+      <a href="#top" className="py-2.5 font-semibold">
+        Ali Noor
+      </a>
+      <div className="-mr-3 flex items-center">
+        <nav aria-label="Sections" className="flex">
+          {["Work", "About", "Contact"].map((name) => {
+            const id = name.toLowerCase();
+            return (
+              <a key={id} href={`#${id}`} aria-current={active === id ? "location" : undefined} className={navLink}>
+                {name}
+              </a>
+            );
+          })}
+        </nav>
+        <ThemeToggle />
+      </div>
+    </header>
+  );
+}
+
+// Plays the entrance of every [data-reveal] element the first time it scrolls into view (styles in globals.css).
+// Only elements still below the fold are hidden, and only once this runs, so nothing is hidden without JavaScript.
+export function Reveals() {
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const { target, isIntersecting, boundingClientRect } of entries) {
+          const el = target as HTMLElement;
+          if (isIntersecting) {
+            el.dataset.reveal = "";
+            io.unobserve(el);
+          } else if (boundingClientRect.top >= innerHeight) {
+            el.dataset.reveal = "hidden";
+          }
+        }
+      },
+      { rootMargin: "0px 0px -8% 0px" },
+    );
+    document.querySelectorAll("[data-reveal]").forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  return null;
+}
+
+function ThemeToggle() {
   // In development, React's Strict Mode remount strips the data-theme the inline script in layout.tsx set.
   // Putting it back before paint is the fix from the Next.js guide; in production this changes nothing.
   useLayoutEffect(() => {

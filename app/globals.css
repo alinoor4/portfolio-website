@@ -58,7 +58,9 @@ button {
   }
 }
 
-/* Hero chart: both lines are revealed left to right at constant speed, the way training steps pass */
+/* Motion. One direction runs through the page: chart lines, bars and panels all draw in from the left,
+   the way training steps pass. Text only fades and rises a little. */
+
 @keyframes train {
   from {
     clip-path: inset(-8px 100% -8px 0);
@@ -74,7 +76,34 @@ button {
   }
 }
 
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* Scroll reveals. The Reveals script in controls.tsx sets data-reveal="hidden" on elements below the fold,
+   then clears it the first time each one scrolls into view. Without motion they only fade. */
+[data-reveal] {
+  transition: opacity 200ms linear;
+}
+[data-reveal="hidden"] {
+  opacity: 0;
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Hero text enters on load, headline first */
+  .hero-in {
+    animation: rise 600ms var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+
+  /* Hero chart: both lines are revealed left to right at constant speed */
   .plot-lines {
     animation: train 2s linear both;
   }
@@ -88,6 +117,58 @@ button {
   /* Axis and end labels land in the second half of the morph, together with the lines */
   .plot-swap {
     animation: appear 250ms var(--ease-out) 250ms both;
+  }
+
+  [data-reveal] {
+    transition:
+      opacity 500ms var(--ease-out),
+      transform 500ms var(--ease-out);
+  }
+  /* The negative inset keeps focus rings at a panel's edge from being clipped once it is fully drawn */
+  [data-wipe] {
+    clip-path: inset(-8px);
+    transition:
+      clip-path 700ms var(--ease-out),
+      opacity 250ms linear;
+  }
+  /* Panels side by side draw in one after another; stacked on a phone they each arrive alone */
+  @media (min-width: 48rem) {
+    [data-reveal] {
+      transition-delay: calc(var(--i, 0) * 70ms);
+    }
+  }
+  [data-reveal="hidden"] {
+    transform: translateY(12px);
+  }
+  [data-reveal="hidden"][data-wipe] {
+    transform: none;
+    clip-path: inset(-8px 100% -8px -8px);
+  }
+
+  /* Bars grow from the axis just after their panel starts to draw */
+  .bar {
+    transform-origin: left;
+    transition: transform 600ms var(--ease-out);
+    transition-delay: calc(200ms + var(--i, 0) * 40ms);
+  }
+  [data-reveal="hidden"] .bar {
+    transform: scaleX(0);
+  }
+}
+
+/* Hiding happens off screen and must be instant, or the reveal would start from a half-hidden state */
+[data-reveal="hidden"],
+[data-reveal="hidden"] .bar {
+  transition: none;
+}
+
+/* A page printed or saved as PDF before it was scrolled must still show everything */
+@media print {
+  [data-reveal="hidden"],
+  [data-reveal="hidden"] .bar {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
   }
 }
 

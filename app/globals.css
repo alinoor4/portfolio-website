@@ -255,21 +255,6 @@ html.pen-on * {
     );
 }
 
-@keyframes train {
-  from {
-    clip-path: inset(-8px 100% -8px 0);
-  }
-  to {
-    clip-path: inset(-8px -8px -8px 0);
-  }
-}
-
-@keyframes appear {
-  from {
-    opacity: 0;
-  }
-}
-
 @keyframes rise {
   from {
     opacity: 0;
@@ -471,20 +456,6 @@ html.pen-on * {
     animation-delay: calc(var(--i, 0) * 220ms);
   }
 
-  /* Codex chart lines draw left to right */
-  .plot-lines {
-    animation: train 2s linear both;
-  }
-  .plot-lines path {
-    transition: d 500ms var(--ease-in-out);
-  }
-  .plot-end {
-    animation: appear 300ms var(--ease-out) 1.9s both;
-  }
-  .plot-swap {
-    animation: appear 250ms var(--ease-out) 250ms both;
-  }
-
   [data-reveal] {
     transition:
       opacity 1300ms var(--ease-out),
@@ -552,8 +523,7 @@ html.pen-on * {
 
 @media (prefers-reduced-motion: reduce) {
   .panel-swap,
-  .hero-in,
-  .plot-lines {
+  .hero-in {
     animation: none !important;
   }
   ::view-transition-group(*),

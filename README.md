@@ -45,7 +45,6 @@ Files in `public/art/relics/` are details of those sheets turned into gold line-
 app/
 ├── content.ts     # Portfolio copy, links, project metrics and tool lists
 ├── controls.tsx   # Nav, project picker, scroll reveals, pointer effects, email copy (client code)
-├── figure.tsx     # Interactive grokking chart (currently not rendered on the page)
 ├── globals.css    # Tailwind v4 theme tokens, paper grain, gate etchings and all motion
 ├── icon.svg       # Favicon
 ├── layout.tsx     # Root layout, fonts and metadata

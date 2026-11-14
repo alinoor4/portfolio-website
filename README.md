@@ -1,56 +1,79 @@
 # Ali Noor — Portfolio
 
-Personal portfolio showcasing my work in machine learning research, AI agents, LLM security, and backend engineering.
+Personal portfolio for my work in machine learning research, AI agents, LLM security and backend engineering. The design is a restrained Renaissance theme: real public-domain artwork, gold line-work section headers and a walnut-and-vellum palette, with plain technical copy.
 
 **Live site:** [alinoor-portfolio.vercel.app](https://alinoor-portfolio.vercel.app/)
 
-## Overview
+## What's on the page
 
-- **Interactive Hero Figure (`app/figure.tsx`):** Plots real training runs (validation accuracy and weight norm over 6,000 steps, averaged across 3 seeds) from my [replication of Power et al. (2022)](https://github.com/alinoor4/grokking-repo), morphing SVG paths smoothly when switching metrics.
-- **Featured Research & Engineering Readouts (`app/page.tsx`):** Full-width panels with inline horizontal bar charts and key metrics for featured work (such as 100% Precision@50 on unseen domains at FlyRank and 970+ unit tests on Project Learner AI), paired with a responsive grid for additional projects.
-- **Seaborn-Inspired Theme System (`app/globals.css`, `app/controls.tsx`):** Built on CSS `light-dark()` tokens inspired by `seaborn` (`darkgrid` panels, blue/orange series), with an inline pre-paint script in `app/layout.tsx` to prevent theme flash and View Transitions API crossfading.
-- **Accessible Motion:** Left-to-right clip-path reveals and bar transitions that respect `prefers-reduced-motion`, degrade cleanly without JavaScript, and render fully in `@media print`.
+| Section | Content |
+| --- | --- |
+| Hero | Name, tagline, links, Raphael's *The School of Athens* as the backdrop |
+| Folio I · Machine Learning & Research | FlyRank search ranking, grokking replication, computer vision lab series, linear regression from scratch |
+| Folio II · Agents & LLM Security | Project Learner AI, SubKiller, Squeeze, secure LLM gateway |
+| Folio III · Software Engineering | Little Lemon API, movie inventory app, earlier work |
+| Folio IV · Technical Stack & Education | Tools by category, engineering pipeline, education and training |
+| Contact | Email (with copy button), GitHub, LinkedIn |
 
-## Project Structure
+Each project folio uses a picker: the project list sits beside the chosen project's card, the first project is open by default, and arrow keys move the selection.
+
+## Motion and interaction
+
+All motion is CSS or a few lines of client code, with no animation library.
+
+- Pointer: a candlelight glow follows the mouse, header drawings and background objects shift at different depths, and a card's edge lights up where the pointer is.
+- Scroll: the hero and section drawings drift, the panorama settles, a gold progress line under the nav fills, and cards and bars reveal as they enter the viewport.
+- Background: small gold details cut from Leonardo's sketches bob or turn slowly in the page margins (large screens only).
+- Reduced motion and touch: everything above is disabled under `prefers-reduced-motion: reduce`, and pointer effects only run with a fine pointer that can hover. The page renders fully without JavaScript and in print.
+
+## Artwork
+
+Images in `public/art/` are public-domain reproductions from [Wikimedia Commons](https://commons.wikimedia.org) (the Ideal City photograph is CC0):
+
+- Raphael, *The School of Athens*, 1509–11
+- Leonardo da Vinci: *Vitruvian Man*, scythed chariot and armoured car, design for a flying machine, studies of water, shadows on spheres, a lifting machine
+- *Rhombicuboctahedron*, after Leonardo, from Luca Pacioli's *Divina proportione*, 1509
+- *The Ideal City*, Urbino, c. 1480–90
+
+Files in `public/art/relics/` are details of those sheets turned into gold line-work on a transparent background.
+
+## Project structure
 
 ```text
 app/
-├── content.ts     # All portfolio copy, links, project metrics, and grokking chart data
-├── controls.tsx   # Sticky nav (IntersectionObserver), theme toggle, scroll reveals, email copy
-├── figure.tsx     # Interactive SVG hero chart (validation accuracy vs. weight norm)
-├── globals.css    # Tailwind CSS v4 theme tokens, light-dark() palette, and keyframes
-├── icon.svg       # Site favicon
-├── layout.tsx     # Root layout, Atkinson Hyperlegible Next font, and pre-paint theme script
-└── page.tsx       # Page sections (Work, Earlier work, About, Contact) and data visualizations
+├── content.ts     # Portfolio copy, links, project metrics and tool lists
+├── controls.tsx   # Nav, project picker, scroll reveals, pointer effects, email copy (client code)
+├── figure.tsx     # Interactive grokking chart (currently not rendered on the page)
+├── globals.css    # Tailwind v4 theme tokens, paper grain, gate etchings and all motion
+├── icon.svg       # Favicon
+├── layout.tsx     # Root layout, fonts and metadata
+└── page.tsx       # Page sections and layout (server component)
+public/art/        # Artwork scans and relic cut-outs
 ```
 
-## Tech Stack
+## Tech stack
 
-- **Framework:** [Next.js 16](https://nextjs.org) (App Router, Turbopack, `cacheComponents`, `partialPrefetching`)
-- **UI:** [React 19](https://react.dev), [TypeScript 5](https://www.typescriptlang.org)
-- **Styling:** [Tailwind CSS v4](https://tailwindcss.com) (`@tailwindcss/turbopack`)
-- **Typography:** `Atkinson Hyperlegible Next` via `next/font/google`
-- **Deployment:** [Vercel](https://alinoor-portfolio.vercel.app/)
+- [Next.js 16](https://nextjs.org) (App Router, Turbopack, `cacheComponents`, `partialPrefetching`)
+- [React 19](https://react.dev) and [TypeScript 5](https://www.typescriptlang.org)
+- [Tailwind CSS v4](https://tailwindcss.com)
+- Fonts via `next/font/google`: Cormorant Garamond (headings), Atkinson Hyperlegible Next (text), JetBrains Mono (labels)
+- Deployed on [Vercel](https://alinoor-portfolio.vercel.app/)
 
-## Local Development
+## Local development
 
 ```bash
 npm install
-npm run dev
+npm run dev     # http://localhost:3000
 ```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-### Other Scripts
 
 ```bash
 npm run build   # Production build
-npm run start   # Start production server
-npm run lint    # Run ESLint
+npm run start   # Serve the production build
+npm run lint    # ESLint
 ```
 
 ## Contact
 
-- **Email:** [alinoor3865@gmail.com](mailto:alinoor3865@gmail.com)
-- **GitHub:** [github.com/alinoor4](https://github.com/alinoor4)
-- **LinkedIn:** [linkedin.com/in/ali-noor04](https://www.linkedin.com/in/ali-noor04/)
+- Email: [alinoor3865@gmail.com](mailto:alinoor3865@gmail.com)
+- GitHub: [github.com/alinoor4](https://github.com/alinoor4)
+- LinkedIn: [linkedin.com/in/ali-noor04](https://www.linkedin.com/in/ali-noor04/)

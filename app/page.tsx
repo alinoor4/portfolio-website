@@ -275,7 +275,7 @@ export default function Home() {
               style={order(0)}
               className="hero-in font-mono text-xs tracking-[0.24em] text-[#f6d28b] uppercase drop-shadow-[0_1px_10px_rgba(22,16,11,0.8)]"
             >
-              Change happens because we will it
+              Innovation happens when we will it so
             </p>
             <h1
               id="intro"
@@ -290,15 +290,9 @@ export default function Home() {
             >
               Machine Learning Undergraduate
             </p>
-            <p
-              style={order(3)}
-              className="hero-in mx-auto mt-4 max-w-2xl text-base/[1.6] text-[#f4ead5]/95 drop-shadow-[0_1px_12px_rgba(22,16,11,0.85)] sm:text-lg"
-            >
-              I train models, then take them apart to find out why they work.
-            </p>
 
             <div
-              style={order(4)}
+              style={order(3)}
               className="hero-in mt-7 flex flex-wrap items-center justify-center gap-3 text-xs font-medium"
             >
               <a
@@ -329,7 +323,7 @@ export default function Home() {
           </div>
 
           <p
-            style={order(5)}
+            style={order(4)}
             className="hero-in absolute right-4 bottom-24 left-4 z-10 text-center font-mono text-[0.6875rem] tracking-[0.16em] text-[#c8b89b] uppercase sm:right-8 sm:left-auto sm:text-right"
           >
             Raphael · The School of Athens · 1509&ndash;11<span className="hidden sm:inline"> · Vatican</span>

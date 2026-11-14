@@ -5,7 +5,7 @@ import { Children, type ReactNode, useEffect, useId, useRef, useState } from "re
 const press = "transition-transform duration-150 ease-out active:scale-[0.97]";
 
 const navLink =
-  "px-2 py-1.5 text-sm font-medium text-[#f4ead5]/80 transition-colors duration-150 ease-out hover:text-[#f4ead5] aria-[current=location]:text-[#e8c97a]";
+  "px-2 py-1.5 text-sm font-medium text-[#f4ead5]/80 transition-colors duration-150 ease-out hover:text-[#f4ead5] aria-[current=location]:text-[#e8c97a] relative after:absolute after:inset-x-2 after:bottom-0.5 after:h-px after:origin-left after:scale-x-0 after:bg-[#e8c97a] after:transition-transform after:duration-200 after:ease-out hover:after:scale-x-100 aria-[current=location]:after:scale-x-100";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -146,7 +146,7 @@ export function Picker({
           >
             <span
               aria-hidden="true"
-              className={`font-display w-11 shrink-0 text-3xl/none font-semibold opacity-55 transition-opacity duration-150 group-aria-selected:opacity-100 ${tone}`}
+              className={`font-display w-11 shrink-0 text-3xl/none font-semibold opacity-55 transition-opacity duration-150 group-hover:opacity-100 group-aria-selected:opacity-100 ${tone}`}
             >
               {tab.numeral}
             </span>
@@ -161,7 +161,7 @@ export function Picker({
               fill="none"
               stroke="currentColor"
               strokeWidth="1.75"
-              className="ml-auto size-4 shrink-0 text-[#e8c97a] opacity-0 transition-opacity duration-150 group-aria-selected:opacity-100"
+              className="ml-auto size-4 shrink-0 text-[#e8c97a] opacity-0 transition-[opacity,transform] duration-150 ease-out group-hover:translate-x-0.5 group-hover:opacity-60 group-aria-selected:opacity-100"
               aria-hidden="true"
             >
               <path d="M6 3.5 10.5 8 6 12.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -185,15 +185,35 @@ export function Picker({
   );
 }
 
-// Plays the entrance of every [data-reveal] element the first time it scrolls into view (styles in globals.css).
+// Counts a stat up to its printed value, keeping its format ("0.9608", "9.3×", "970+").
+function countUp(el: Element) {
+  const printed = el.textContent ?? "";
+  const digits = printed.match(/[d.]+/)?.[0];
+  if (!digits) return;
+  const decimals = digits.split(".")[1]?.length ?? 0;
+  const start = performance.now();
+  const tick = (now: number) => {
+    const t = Math.min(1, (now - start) / 2200);
+    const eased = 1 - (1 - t) ** 3;
+    // the last frame writes the printed text back exactly
+    el.textContent = t < 1 ? printed.replace(digits, (parseFloat(digits) * eased).toFixed(decimals)) : printed;
+    if (t < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+// Plays the entrance of every [data-reveal] element the first time it scrolls into view (styles in globals.css),
+// and counts its [data-count] stats up as it does.
 export function Reveals() {
   useEffect(() => {
+    const moving = matchMedia("(prefers-reduced-motion: no-preference)").matches;
     const io = new IntersectionObserver(
       (entries) => {
         for (const { target, isIntersecting, boundingClientRect } of entries) {
           const el = target as HTMLElement;
           if (isIntersecting) {
             el.dataset.reveal = "";
+            if (moving) el.querySelectorAll("[data-count]").forEach(countUp);
             io.unobserve(el);
           } else if (boundingClientRect.top >= innerHeight) {
             el.dataset.reveal = "hidden";
@@ -213,14 +233,18 @@ export function Reveals() {
 // layer slides up to that many pixels for depth, and the card under it learns where the light is.
 export function Candlelight() {
   const light = useRef<HTMLDivElement>(null);
+  const pen = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = light.current;
+    const cursor = pen.current;
     // Mouse only, and not for people who asked for less motion
     const wanted = "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)";
-    if (!el || !matchMedia(wanted).matches) return;
+    if (!el || !cursor || !matchMedia(wanted).matches) return;
+    document.documentElement.classList.add("pen-on"); // hide the plain CSS cursor; .pen takes over
     const layers = document.querySelectorAll<HTMLElement>("[data-shift]");
     let placed = false;
+    let tilted: HTMLElement | null = null; // the card currently leaning toward the pointer
 
     const onMove = (e: PointerEvent) => {
       // First move places the light instantly; later moves ease after the pointer
@@ -228,6 +252,9 @@ export function Candlelight() {
       placed = true;
       el.style.opacity = "1";
       el.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+      cursor.style.opacity = "1";
+      cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+      cursor.toggleAttribute("data-over", e.target instanceof Element && !!e.target.closest("a, button"));
 
       const x = e.clientX / innerWidth - 0.5;
       const y = e.clientY / innerHeight - 0.5;
@@ -237,27 +264,66 @@ export function Candlelight() {
       }
 
       const card = e.target instanceof Element ? e.target.closest<HTMLElement>(".tile") : null;
+      // Picker tabs are buttons: they get the edge light but stay flat
+      const lean = card && card.tagName !== "BUTTON" ? card : null;
+      if (tilted && tilted !== lean) tilted.style.transform = "";
+      tilted = lean;
       if (card) {
         const box = card.getBoundingClientRect();
-        card.style.setProperty("--mx", `${e.clientX - box.left}px`);
-        card.style.setProperty("--my", `${e.clientY - box.top}px`);
+        const cx = e.clientX - box.left;
+        const cy = e.clientY - box.top;
+        card.style.setProperty("--mx", `${cx}px`);
+        card.style.setProperty("--my", `${cy}px`);
+        if (lean) {
+          // at most 2.5 degrees, so the text stays readable
+          const rx = (0.5 - cy / box.height) * 5;
+          const ry = (cx / box.width - 0.5) * 5;
+          lean.dataset.tilt = "";
+          lean.style.transform = `perspective(1200px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+        }
       }
     };
+    // A gold ring opens where the user clicks
+    const onDown = (e: PointerEvent) => {
+      cursor.dataset.down = "";
+      const ring = document.createElement("span");
+      ring.className = "spark";
+      ring.style.left = `${e.clientX}px`;
+      ring.style.top = `${e.clientY}px`;
+      ring.addEventListener("animationend", () => ring.remove());
+      document.body.append(ring);
+    };
+    const onUp = () => delete cursor.dataset.down;
     const onLeave = () => {
       placed = false;
+      cursor.style.opacity = "0";
+      if (tilted) tilted.style.transform = "";
+      tilted = null;
       delete el.dataset.on;
       el.style.opacity = "0";
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerdown", onDown, { passive: true });
+    window.addEventListener("pointerup", onUp, { passive: true });
     document.documentElement.addEventListener("pointerleave", onLeave);
     return () => {
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointerup", onUp);
+      document.documentElement.classList.remove("pen-on");
       document.documentElement.removeEventListener("pointerleave", onLeave);
     };
   }, []);
 
-  return <div ref={light} aria-hidden="true" className="candlelight" />;
+  return (
+    <>
+      <div ref={light} aria-hidden="true" className="candlelight" />
+      <div ref={pen} aria-hidden="true" className="pen">
+        <span className="pen-art" />
+      </div>
+    </>
+  );
 }
 
 export function CopyEmail({ email }: { email: string }) {

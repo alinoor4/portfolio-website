@@ -5,13 +5,28 @@ import flyingMachine from "../public/art/flying-machine.jpg";
 import idealCity from "../public/art/ideal-city.jpg";
 import rhombicuboctahedron from "../public/art/rhombicuboctahedron.jpg";
 import schoolOfAthens from "../public/art/school-of-athens.jpg";
+import batwing from "../public/art/relics/batwing.webp";
+import bell from "../public/art/relics/bell.webp";
+import cart from "../public/art/relics/cart.webp";
+import catapult from "../public/art/relics/catapult.webp";
+import catapult2 from "../public/art/relics/catapult2.webp";
+import chariot from "../public/art/relics/chariot.webp";
+import crossbow from "../public/art/relics/crossbow.webp";
+import flow from "../public/art/relics/flow.webp";
+import hourglass from "../public/art/relics/hourglass.webp";
 import jack from "../public/art/relics/jack.webp";
 import lance from "../public/art/relics/lance.webp";
+import map from "../public/art/relics/map.webp";
 import polyhedron from "../public/art/relics/polyhedron.webp";
 import rays from "../public/art/relics/rays.webp";
+import screw from "../public/art/relics/screw.webp";
+import square from "../public/art/relics/square.webp";
+import tank from "../public/art/relics/tank.webp";
 import vortex from "../public/art/relics/vortex.webp";
 import wheel from "../public/art/relics/wheel.webp";
+import winch from "../public/art/relics/winch.webp";
 import wheelwork from "../public/art/relics/wheelwork.webp";
+import wing from "../public/art/relics/wing.webp";
 import vitruvianMan from "../public/art/vitruvian-man.jpg";
 import { earlier, email, github, linkedin, type Project, sections, splitTools, tools } from "./content";
 import { Candlelight, CopyEmail, Nav, Picker, Reveals } from "./controls";
@@ -36,7 +51,7 @@ const prose = "text-base/[1.65] text-[#d9cbb3]";
 // Opening paragraph of a folio, across the full grid (relative, so it paints over the relics)
 const lead = `${prose} relative max-w-3xl sm:text-lg md:col-span-2 lg:col-span-6`;
 const numeral = "font-display text-5xl/[0.9] font-semibold";
-const chip = "rounded-md border border-[#d4af37]/20 bg-[#140e0a] px-2.5 py-1 font-mono text-xs text-[#f4ead5]";
+const chip = "chip rounded-md border border-[#d4af37]/20 bg-[#140e0a] px-2.5 py-1 font-mono text-xs text-[#f4ead5]";
 const badge = "rounded-md border border-[#d4af37]/20 bg-[#140e0a] px-2 py-0.5 font-mono text-[0.6875rem] text-[#c8b89b]";
 
 const accents = {
@@ -128,7 +143,7 @@ function ProjectCard({ project, index, accent }: { project: Project; index: numb
         <dl className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
           {project.results.map(([value, label]) => (
             <div key={label} className="rounded-xl border border-[#d4af37]/20 bg-[#140e0a]/90 px-3 py-2.5">
-              <dd className="font-mono text-xl font-semibold text-[#e8c97a] tabular-nums sm:text-2xl">{value}</dd>
+              <dd data-count="" className="font-mono text-xl font-semibold text-[#e8c97a] tabular-nums sm:text-2xl">{value}</dd>
               <dt className="mt-0.5 text-[0.6875rem]/[1.3] text-[#c8b89b]">{label}</dt>
             </div>
           ))}
@@ -169,8 +184,8 @@ function ProjectCard({ project, index, accent }: { project: Project; index: numb
       {/* mt-auto pins tools and links to the foot, so cards in a row line up */}
       <div className="mt-auto pt-5">
         <ul aria-label="Technologies used" className="flex flex-wrap gap-1.5">
-          {splitTools(project.tools).map((tool) => (
-            <li key={tool} className={chip}>
+          {splitTools(project.tools).map((tool, i) => (
+            <li key={tool} style={order(i)} className={chip}>
               {tool}
             </li>
           ))}
@@ -180,6 +195,8 @@ function ProjectCard({ project, index, accent }: { project: Project; index: numb
             <a
               key={label}
               href={href}
+              target="_blank"
+              rel="noopener noreferrer"
               className="group inline-flex items-center gap-1.5 rounded-lg border border-[#d4af37]/35 bg-[#d4af37]/10 px-3 py-1.5 text-xs font-medium text-[#f4ead5] transition-[border-color,background-color,transform] duration-150 ease-out hover:border-[#e8c97a] hover:bg-[#d4af37]/20 active:scale-[0.97]"
             >
               <span>{label}</span>
@@ -279,10 +296,15 @@ export default function Home() {
             </p>
             <h1
               id="intro"
-              style={order(1)}
-              className="hero-in font-display mt-4 text-4xl font-bold tracking-[0.22em] text-[#fff8e8] uppercase drop-shadow-[0_2px_18px_rgba(22,16,11,0.75)] sm:text-6xl lg:text-7xl"
+              aria-label="Ali Noor"
+              className="font-display mt-4 text-4xl font-bold tracking-[0.22em] text-[#fff8e8] uppercase drop-shadow-[0_2px_18px_rgba(22,16,11,0.75)] sm:text-6xl lg:text-7xl"
             >
-              Ali Noor
+              {/* Letters rise one after another; the label above gives screen readers the whole name */}
+              {[..."Ali Noor"].map((letter, i) => (
+                <span key={i} aria-hidden="true" style={order(1 + i * 0.5)} className="hero-in inline-block">
+                  {letter}
+                </span>
+              ))}
             </h1>
             <p
               style={order(2)}
@@ -297,7 +319,7 @@ export default function Home() {
             >
               <a
                 href="#research"
-                className="rounded-md bg-[#f4ead5] px-4 py-2 text-[#16100b] shadow-md transition-transform duration-150 ease-out hover:bg-white active:scale-[0.97]"
+                className="rounded-md bg-[#d4af37] px-4 py-2 font-semibold text-[#16100b] shadow-md transition-[background-color,transform] duration-150 ease-out hover:bg-[#e8c97a] active:scale-[0.97]"
               >
                 View the Work
               </a>
@@ -309,13 +331,17 @@ export default function Home() {
               </a>
               <a
                 href={github}
-                className="rounded-md border border-[#f4ead5]/40 bg-[#16100b]/45 px-4 py-2 text-[#f4ead5] backdrop-blur-sm transition-[border-color,background-color,transform] duration-150 ease-out hover:border-[#f4ead5] hover:bg-[#16100b]/75 active:scale-[0.97]"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-md border border-[#e8c97a]/55 bg-[#16100b]/55 px-4 py-2 text-[#f4ead5] backdrop-blur-sm transition-[border-color,background-color,transform] duration-150 ease-out hover:border-[#e8c97a] hover:bg-[#d4af37]/20 active:scale-[0.97]"
               >
                 GitHub
               </a>
               <a
                 href={linkedin}
-                className="rounded-md border border-[#f4ead5]/40 bg-[#16100b]/45 px-4 py-2 text-[#f4ead5] backdrop-blur-sm transition-[border-color,background-color,transform] duration-150 ease-out hover:border-[#f4ead5] hover:bg-[#16100b]/75 active:scale-[0.97]"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-md border border-[#e8c97a]/55 bg-[#16100b]/55 px-4 py-2 text-[#f4ead5] backdrop-blur-sm transition-[border-color,background-color,transform] duration-150 ease-out hover:border-[#e8c97a] hover:bg-[#d4af37]/20 active:scale-[0.97]"
               >
                 LinkedIn
               </a>
@@ -347,6 +373,9 @@ export default function Home() {
           <div className={grid}>
             <Relic src={rays} depth={-34} seconds={11} className="top-6 right-[2%] w-80 opacity-50" />
             <Relic src={vortex} depth={46} seconds={150} turn className="bottom-8 -left-32 w-52 opacity-35" />
+            <Relic src={wing} depth={26} seconds={16} className="top-[42%] -right-64 w-[26rem] opacity-25" />
+            <Relic src={screw} depth={-60} seconds={10} className="top-8 -left-24 w-28 opacity-40" />
+            <Relic src={square} depth={70} seconds={9} className="right-[30%] bottom-2 w-16 opacity-40" />
             <p data-reveal="" className={lead}>
               {research.intro}
             </p>
@@ -374,6 +403,9 @@ export default function Home() {
           <div className={grid}>
             <Relic src={wheel} depth={-40} seconds={90} turn className="top-2 right-[5%] w-48 opacity-45" />
             <Relic src={jack} depth={50} seconds={13} className="-right-36 bottom-10 w-60 opacity-35" />
+            <Relic src={crossbow} depth={24} seconds={18} className="top-[24%] -left-72 w-[30rem] opacity-25" />
+            <Relic src={cart} depth={-64} seconds={10} className="top-10 right-[25%] w-24 opacity-40" />
+            <Relic src={bell} depth={72} seconds={8} className="bottom-3 left-[44%] w-14 opacity-40" />
             <p data-reveal="" className={lead}>
               {systems.intro}
             </p>
@@ -402,6 +434,9 @@ export default function Home() {
           <div className={grid}>
             <Relic src={wheelwork} depth={-36} seconds={12} className="top-8 right-[3%] w-72 opacity-45" />
             <Relic src={lance} depth={44} seconds={14} className="top-[46%] -left-20 w-14 opacity-45" />
+            <Relic src={map} depth={22} seconds={18} className="top-[30%] -right-72 w-[30rem] opacity-25" />
+            <Relic src={batwing} depth={-66} seconds={9} className="top-6 right-[29%] w-28 opacity-40" />
+            <Relic src={catapult} depth={58} seconds={11} className="bottom-2 -left-24 w-40 opacity-40" />
             <p data-reveal="" className={lead}>
               {backend.intro} Earlier projects in Python, Java and T-SQL are listed with them.
             </p>
@@ -431,6 +466,8 @@ export default function Home() {
                     <li key={name}>
                       <a
                         href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="group flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 py-3 transition-colors duration-150 ease-out hover:text-[#e8c97a]"
                       >
                         <span className="text-sm font-medium sm:text-base">{name}</span>
@@ -461,8 +498,11 @@ export default function Home() {
             <cite>Divina proportione</cite>, Venice, 1509.
           </Gate>
           <div className={grid}>
-            <Relic src={wheel} depth={38} seconds={110} turn className="-right-28 top-[38%] w-44 opacity-35" />
+            <Relic src={winch} depth={38} seconds={13} className="top-[38%] -right-32 w-48 opacity-35" />
             <Relic src={polyhedron} depth={-46} seconds={14} className="bottom-6 -left-32 w-48 opacity-35" />
+            <Relic src={chariot} depth={-28} seconds={17} className="top-10 right-0 w-[30rem] opacity-30" />
+            <Relic src={hourglass} depth={62} seconds={9} className="top-[30%] -left-14 w-12 opacity-45" />
+            <Relic src={tank} depth={-54} seconds={12} className="bottom-[20%] -right-28 w-40 opacity-35" />
             <p data-reveal="" className={lead}>
               The languages, libraries, frameworks, databases and infrastructure I use across research notebooks,
               agent pipelines and production backends.
@@ -491,8 +531,8 @@ export default function Home() {
                   </div>
 
                   <ul aria-label={`${group} technologies`} className="mt-5 flex flex-wrap gap-1.5">
-                    {parsedItems.map((tool) => (
-                      <li key={tool} className={chip}>
+                    {parsedItems.map((tool, i) => (
+                      <li key={tool} style={order(i)} className={chip}>
                         {tool}
                       </li>
                     ))}
@@ -552,8 +592,8 @@ export default function Home() {
 
         {/* FINALE — the Ideal City panorama over the contact card */}
         <section id="contact" className="relative scroll-mt-16 pb-14 lg:pb-20">
-          <Relic src={vortex} depth={-42} seconds={170} turn className="top-[31vw] left-[7%] w-52 opacity-35" />
-          <Relic src={rays} depth={40} seconds={12} className="top-[33vw] right-[5%] w-72 opacity-45" />
+          <Relic src={flow} depth={-42} seconds={14} className="top-[31vw] left-[6%] w-60 opacity-35" />
+          <Relic src={catapult2} depth={40} seconds={12} className="top-[35vw] right-[4%] w-80 opacity-45" />
           {/* overflow-clip, not hidden: hidden would make this box the scroll source for the view() timeline */}
           <div className="relative overflow-clip">
             <Image
@@ -590,7 +630,7 @@ export default function Home() {
             <p className="mt-6">
               <a
                 href={`mailto:${email}`}
-                className="font-mono text-lg font-semibold break-all text-[#e8c97a] underline decoration-[#e8c97a]/45 underline-offset-4 transition-colors hover:text-white hover:decoration-white sm:text-2xl"
+                className="font-mono text-lg font-semibold break-all text-[#e8c97a] underline decoration-[#e8c97a]/45 underline-offset-4 transition-colors hover:text-[#f6d28b] hover:decoration-[#f6d28b] sm:text-2xl"
               >
                 {email}
               </a>
@@ -600,12 +640,16 @@ export default function Home() {
               <CopyEmail email={email} />
               <a
                 href={github}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="rounded-lg border border-[#d4af37]/40 bg-[#1c130d]/85 px-4 py-2.5 text-sm font-medium text-[#f4ead5] backdrop-blur-sm transition-[border-color,background-color,transform] duration-150 ease-out hover:border-[#e8c97a] hover:bg-[#d4af37]/15 active:scale-[0.97]"
               >
                 GitHub
               </a>
               <a
                 href={linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="rounded-lg border border-[#d4af37]/40 bg-[#1c130d]/85 px-4 py-2.5 text-sm font-medium text-[#f4ead5] backdrop-blur-sm transition-[border-color,background-color,transform] duration-150 ease-out hover:border-[#e8c97a] hover:bg-[#d4af37]/15 active:scale-[0.97]"
               >
                 LinkedIn
@@ -624,7 +668,7 @@ export default function Home() {
           <p className="font-mono">Ali Noor · Machine Learning Undergraduate</p>
           <p>COMSATS University Islamabad, Wah Campus</p>
           <p className="w-full text-[#c8b89b]/80">
-            Artworks by Raphael, Leonardo da Vinci and an unknown Central Italian painter: public-domain reproductions
+            Artworks by Raphael, Leonardo da Vinci, Albrecht D&uuml;rer and an unknown Central Italian painter: public-domain reproductions
             from Wikimedia Commons.
           </p>
         </div>

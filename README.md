@@ -21,17 +21,19 @@ Each project folio uses a picker: the project list sits beside the chosen projec
 
 All motion is CSS or a few lines of client code, with no animation library.
 
-- Pointer: a candlelight glow follows the mouse, header drawings and background objects shift at different depths, and a card's edge lights up where the pointer is.
+- Pointer: the cursor is a swaying feather quill that becomes a tapping gauntlet over anything clickable; a candlelight glow follows it, header drawings and background objects shift at different depths, cards lean slightly toward it and their edges light up, and a gold ring opens on click.
 - Scroll: the hero and section drawings drift, the panorama settles, a gold progress line under the nav fills, and cards and bars reveal as they enter the viewport.
-- Background: small gold details cut from Leonardo's sketches bob or turn slowly in the page margins (large screens only).
-- Reduced motion and touch: everything above is disabled under `prefers-reduced-motion: reduce`, and pointer effects only run with a fine pointer that can hover. The page renders fully without JavaScript and in print.
+- Background: 22 gold details cut from the drawings, from tiny to very large, bob or turn slowly behind the content (large screens only).
+- Entrances: the name rises letter by letter, stats count up, and tool chips follow their card in.
+- Reduced motion and touch: everything above is disabled under `prefers-reduced-motion: reduce` (the cursors stay, as static images), and pointer effects only run with a fine pointer that can hover. The page renders fully without JavaScript and in print.
 
 ## Artwork
 
 Images in `public/art/` are public-domain reproductions from [Wikimedia Commons](https://commons.wikimedia.org) (the Ideal City photograph is CC0):
 
 - Raphael, *The School of Athens*, 1509–11
-- Leonardo da Vinci: *Vitruvian Man*, scythed chariot and armoured car, design for a flying machine, studies of water, shadows on spheres, a lifting machine
+- Leonardo da Vinci: *Vitruvian Man*, scythed chariot and armoured car, design for a flying machine, studies of water, shadows on spheres, a lifting machine, aerial screw and glider, giant crossbow, self-propelled cart, catapults, a map of rivers
+- Albrecht Dürer, *Melencolia I*, 1514 (hourglass, bell and magic square details)
 - *Rhombicuboctahedron*, after Leonardo, from Luca Pacioli's *Divina proportione*, 1509
 - *The Ideal City*, Urbino, c. 1480–90
 

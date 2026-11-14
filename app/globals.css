@@ -35,8 +35,69 @@ button {
   touch-action: manipulation;
 }
 
+/* Site cursor: a feather quill, and a gauntlet with a pointing finger over anything clickable.
+   Plain CSS cursors by default. With a mouse and motion allowed, Candlelight (controls.tsx) hides them and moves .pen instead, so the cursor can animate. */
+:root {
+  --cursor-quill: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg transform='translate(-17 2) rotate(-45 20 1)' stroke='%23b8902f' stroke-width='1' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M20 15C27 17 30.500 28 27.500 40 26.500 44 26 46 24.500 47L25 43.500 22 50.500H19.500C16 44 14.500 34 16 24 17 19 18.500 16.500 20 15Z' fill='%23f4ead5'/%3E%3Cpath d='M20 15C20.600 28 20.600 40 20.300 50.500M20.500 22l5.500-3.500M20.600 28l7-4M20.600 34l7.500-4M20.500 40l6.500-3.500M20.400 46l3.500-2M20.300 24l-3.500-1.500M20.400 31l-4.500-2M20.400 38l-4-2M20.300 45l-2.500-1.500' fill='none' stroke-width='.7'/%3E%3Cpath d='M20 1l1.500 15h-3z' fill='%23f4ead5' stroke='%23e8c97a'/%3E%3Cpath d='M20 1v6' fill='none' stroke='%2316100b' stroke-width='.8'/%3E%3C/g%3E%3C/svg%3E");
+  --cursor-hand: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg stroke='%23e8c97a' stroke-width='1.2' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M10 14V4a2 2 0 0 1 4 0v8h8a3 3 0 0 1 3 3v7H10z' fill='%2316100b'/%3E%3Cpath d='M10 15l-3-2a1.800 1.800 0 0 0-2 3l5 5' fill='%2316100b'/%3E%3Cpath d='M14 12v4M18 12v4M22 12.500v3.500M10 8.500h4' fill='none' stroke-width='.9'/%3E%3Cpath d='M9 22h17l2 7H7z' fill='%23e8c97a'/%3E%3C/g%3E%3C/svg%3E");
+}
+html {
+  cursor: var(--cursor-quill) 3 3, auto;
+}
+a,
 button {
-  cursor: pointer;
+  cursor: var(--cursor-hand) 12 2, pointer;
+}
+html.pen-on,
+html.pen-on * {
+  cursor: none !important;
+}
+.pen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  opacity: 0;
+  pointer-events: none;
+}
+/* The quill sways from its nib, as if writing */
+.pen-art {
+  display: block;
+  width: 40px;
+  height: 40px;
+  margin: -3px 0 0 -3px;
+  background: var(--cursor-quill) no-repeat;
+  transform-origin: 3px 3px;
+  animation: pen-sway 1600ms ease-in-out infinite alternate;
+  transition: scale 150ms ease-out;
+}
+/* The gauntlet taps its finger on anything clickable */
+.pen[data-over] .pen-art {
+  width: 32px;
+  height: 32px;
+  margin: -2px 0 0 -12px;
+  background-image: var(--cursor-hand);
+  transform-origin: 12px 2px;
+  animation: pen-tap 700ms ease-in-out infinite alternate;
+}
+.pen[data-down] .pen-art {
+  scale: 0.85;
+}
+@keyframes pen-sway {
+  from {
+    rotate: -9deg;
+  }
+  to {
+    rotate: 9deg;
+  }
+}
+@keyframes pen-tap {
+  from {
+    translate: 0 1px;
+  }
+  to {
+    translate: 0 -4px;
+  }
 }
 
 :focus-visible {
@@ -167,6 +228,19 @@ button {
     opacity 500ms ease;
 }
 
+/* Ring that opens where the user clicks; added and removed by Candlelight in controls.tsx. */
+.spark {
+  position: fixed;
+  z-index: 50;
+  width: 9rem;
+  height: 9rem;
+  margin: -4.5rem 0 0 -4.5rem;
+  border: 1px solid rgba(246, 210, 139, 0.85);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: spark 900ms var(--ease-out) forwards;
+}
+
 /* Darkens the fresco behind the hero text and fades its lower edge into the page. */
 .hero-scrim {
   background:
@@ -224,6 +298,17 @@ button {
 @keyframes progress {
   to {
     scale: 1 1;
+  }
+}
+
+@keyframes spark {
+  from {
+    scale: 0.15;
+    opacity: 1;
+  }
+  to {
+    scale: 1;
+    opacity: 0;
   }
 }
 
@@ -290,7 +375,7 @@ button {
   /* Overscan, so neither the pointer shift nor the scroll drift bares an edge. */
   .hero-art {
     scale: 1.04;
-    animation: settle 1800ms var(--ease-out) both;
+    animation: settle 3800ms var(--ease-out) both;
   }
   .etching img {
     scale: 1.16;
@@ -298,7 +383,7 @@ button {
 
   /* A gate opens: the gilded drawing develops and the numeral settles as the title rises. */
   .etching {
-    transition: opacity 1400ms var(--ease-out);
+    transition: opacity 3000ms var(--ease-out);
   }
   .etching:has(+ [data-reveal="hidden"]) {
     opacity: 0;
@@ -306,7 +391,7 @@ button {
   }
   .numeral {
     transition:
-      scale 1100ms var(--ease-out),
+      scale 2400ms var(--ease-out),
       transform 900ms var(--ease-out);
   }
   [data-reveal="hidden"] .numeral {
@@ -321,14 +406,30 @@ button {
     animation: turn 120s linear infinite;
   }
 
+  /* Tool chips follow their card in, one after another; a newly picked project's chips do the same. */
+  .chip {
+    transition:
+      opacity 900ms var(--ease-out),
+      translate 900ms var(--ease-out);
+    transition-delay: calc(650ms + var(--i, 0) * 90ms);
+  }
+  [data-reveal="hidden"] .chip {
+    opacity: 0;
+    translate: 0 6px;
+  }
+  .panel-swap .chip {
+    animation: rise 700ms var(--ease-out) backwards;
+    animation-delay: calc(300ms + var(--i, 0) * 70ms);
+  }
+
   /* A newly picked project's bars grow in again. backwards, so the reveal transition below still owns them afterwards. */
   .panel-swap .bar {
-    animation: grow 600ms var(--ease-out) backwards;
-    animation-delay: calc(150ms + var(--i, 0) * 40ms);
+    animation: grow 1100ms var(--ease-out) backwards;
+    animation-delay: calc(300ms + var(--i, 0) * 80ms);
   }
 
   .tile::before {
-    transition: scale 900ms var(--ease-out) calc(var(--i, 0) * 70ms + 250ms);
+    transition: scale 2000ms var(--ease-out) calc(var(--i, 0) * 170ms + 500ms);
   }
   [data-reveal="hidden"].tile::before {
     scale: 0 1;
@@ -347,7 +448,7 @@ button {
     }
     .hero-art {
       animation:
-        settle 1800ms var(--ease-out) both,
+        settle 3800ms var(--ease-out) both,
         drift linear both;
       animation-timeline: auto, scroll(root);
       animation-range-start: normal, 0px;
@@ -361,13 +462,13 @@ button {
   }
 
   .panel-swap {
-    animation: panelSwap 220ms var(--ease-out) both;
+    animation: panelSwap 500ms var(--ease-out) both;
   }
 
   /* Hero text enters on load */
   .hero-in {
-    animation: rise 600ms var(--ease-out) both;
-    animation-delay: calc(var(--i, 0) * 90ms);
+    animation: rise 1500ms var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 220ms);
   }
 
   /* Codex chart lines draw left to right */
@@ -386,8 +487,8 @@ button {
 
   [data-reveal] {
     transition:
-      opacity 500ms var(--ease-out),
-      transform 500ms var(--ease-out);
+      opacity 1300ms var(--ease-out),
+      transform 1300ms var(--ease-out);
   }
   [data-wipe] {
     clip-path: inset(-8px);
@@ -399,11 +500,15 @@ button {
   }
   @media (min-width: 48rem) {
     [data-reveal] {
-      transition-delay: calc(var(--i, 0) * 70ms);
+      transition-delay: calc(var(--i, 0) * 170ms);
     }
   }
   [data-reveal="hidden"] {
     transform: translateY(12px);
+  }
+  /* A card that has leaned toward the pointer (Candlelight in controls.tsx) follows it quickly and eases back. */
+  .tile[data-tilt] {
+    transition: transform 200ms var(--ease-out);
   }
   [data-reveal="hidden"][data-wipe] {
     transform: none;
@@ -412,8 +517,8 @@ button {
 
   .bar {
     transform-origin: left;
-    transition: transform 600ms var(--ease-out);
-    transition-delay: calc(200ms + var(--i, 0) * 40ms);
+    transition: transform 1500ms var(--ease-out);
+    transition-delay: calc(500ms + var(--i, 0) * 110ms);
   }
   [data-reveal="hidden"] .bar {
     transform: scaleX(0);
@@ -422,6 +527,7 @@ button {
 
 [data-reveal="hidden"],
 [data-reveal="hidden"] .bar,
+[data-reveal="hidden"] .chip,
 [data-reveal="hidden"] .numeral {
   transition: none;
 }
@@ -435,6 +541,9 @@ button {
   }
   .etching:has(+ [data-reveal="hidden"]) {
     opacity: 0.9 !important;
+  }
+  [data-reveal="hidden"] .chip {
+    opacity: 1 !important;
   }
   [data-reveal="hidden"] .numeral {
     scale: none !important;

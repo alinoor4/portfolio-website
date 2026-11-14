@@ -56,14 +56,130 @@ button {
   }
 }
 
-.codex-drafting-grid {
-  background-image:
-    linear-gradient(to right, rgba(212, 175, 55, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(212, 175, 55, 0.045) 1px, transparent 1px);
-  background-size: 48px 48px;
+/* Walnut ground with a fine paper grain, so the page reads as a surface rather than flat fill. */
+.surface {
+  background-color: #16100b;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.96 0 0 0 0 0.92 0 0 0 0 0.84 0 0 0 0.16 -0.04'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 }
 
-/* Codex & Renaissance mechanical motion */
+/* Chapter gates: the folio's drawing turned to gilded line-work (ink to light, paper to black, warmed to gold). */
+.etching {
+  --edge-fade: linear-gradient(to bottom, transparent, #000 26%, #000 74%, transparent);
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  /* phones: the drawing sits behind the title, so it fades out before the text */
+  mask-image: linear-gradient(to bottom, transparent, #000 24%, #000 42%, transparent 82%);
+}
+.etching img {
+  filter: grayscale(1) invert(1) contrast(1.7) sepia(1) saturate(1.8);
+}
+@media (min-width: 64rem) {
+  /* fades toward the title, and at the band's top and bottom so it never meets an edge */
+  .etching {
+    opacity: 0.9;
+    mask-image: linear-gradient(to left, #000 40%, transparent), var(--edge-fade);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+  .etching-flip {
+    mask-image: linear-gradient(to right, #000 40%, transparent), var(--edge-fade);
+  }
+}
+
+/* Gilded hairline along the top of every card; it draws open as the card loads in. */
+.tile::before {
+  content: "";
+  position: absolute;
+  inset: -1px 1.5rem auto;
+  z-index: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(232, 201, 122, 0.8), transparent);
+}
+/* The card's gilt edge catches the light nearest the pointer; --mx and --my come from Candlelight in controls.tsx. */
+@media (hover: hover) and (pointer: fine) {
+  .tile::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    padding: 1px;
+    border-radius: inherit;
+    background: radial-gradient(20rem circle at var(--mx, 50%) var(--my, 0%), rgba(246, 210, 139, 0.95), transparent 70%);
+    /* show the gradient only in the 1px ring between the border box and the content box */
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms ease;
+  }
+  .tile:hover::after {
+    opacity: 1;
+  }
+}
+/* In a project picker only the chosen tab keeps its hairline. */
+[role="tab"].tile::before {
+  transition: opacity 200ms ease;
+}
+[role="tab"][aria-selected="false"].tile::before {
+  opacity: 0;
+}
+/* Reading progress: a gold rule under the nav, driven by page scroll where the browser supports it. */
+.progress {
+  position: absolute;
+  inset: auto 0 -1px;
+  height: 1px;
+  background: #e8c97a;
+  transform-origin: left;
+  scale: 0 1;
+}
+.numeral {
+  margin-bottom: 0.05em;
+  font-size: clamp(8rem, 19vw, 17rem);
+  font-weight: 600;
+  line-height: 0.8;
+  color: transparent;
+  background: linear-gradient(to bottom, rgba(232, 201, 122, 0.55), rgba(232, 201, 122, 0.08));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-stroke: 1px rgba(212, 175, 55, 0.45);
+}
+
+/* Candlelight that trails the pointer; positioned by Candlelight in controls.tsx, which also moves the [data-shift] layers. */
+.candlelight {
+  position: fixed;
+  top: -24rem;
+  left: -24rem;
+  z-index: 30;
+  width: 48rem;
+  height: 48rem;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 214, 140, 0.2), rgba(255, 214, 140, 0.07) 45%, transparent);
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+}
+.candlelight[data-on] {
+  transition:
+    transform 500ms var(--ease-out),
+    opacity 500ms ease;
+}
+
+/* Darkens the fresco behind the hero text and fades its lower edge into the page. */
+.hero-scrim {
+  background:
+    radial-gradient(58% 44% at 50% 33%, rgba(22, 16, 11, 0.7), rgba(22, 16, 11, 0) 100%),
+    linear-gradient(
+      to bottom,
+      rgba(22, 16, 11, 0.88) 0%,
+      rgba(22, 16, 11, 0.5) 24%,
+      rgba(22, 16, 11, 0.34) 50%,
+      rgba(15, 10, 7, 0.82) 80%,
+      #0f0a07 96%
+    );
+}
 
 @keyframes train {
   from {
@@ -87,81 +203,59 @@ button {
   }
 }
 
-@keyframes turbineSpin {
+@keyframes settle {
   from {
-    transform: rotate(0deg);
+    scale: 1.1;
+  }
+}
+
+@keyframes drift {
+  to {
+    translate: 0 9%;
+  }
+}
+
+@keyframes dolly {
+  from {
+    scale: 1.12;
+  }
+}
+
+@keyframes progress {
+  to {
+    scale: 1 1;
+  }
+}
+
+@keyframes bob {
+  from {
+    translate: 0 -8px;
+    rotate: -2deg;
   }
   to {
-    transform: rotate(360deg);
+    translate: 0 10px;
+    rotate: 2deg;
   }
 }
 
-@keyframes compassSpin {
+@keyframes turn {
+  to {
+    rotate: 1turn;
+  }
+}
+
+@keyframes grow {
   from {
-    transform: rotate(0deg);
+    transform: scaleX(0);
+  }
+}
+
+@keyframes gate-drift {
+  from {
+    translate: 0 -5%;
   }
   to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes circuitFlow {
-  from {
-    stroke-dashoffset: 64;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes waterfallFlow {
-  from {
-    transform: translateY(-74px);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-@keyframes orbFloat {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes jetPulse {
-  0%,
-  100% {
-    opacity: 0.72;
-    transform: scaleY(0.96);
-  }
-  50% {
-    opacity: 1;
-    transform: scaleY(1.06);
-  }
-}
-
-@keyframes cloudDrift {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(18px);
-  }
-}
-
-@keyframes beamShimmer {
-  0%,
-  100% {
-    opacity: 0.55;
-  }
-  50% {
-    opacity: 0.9;
+    translate: 0 5%;
   }
 }
 
@@ -189,46 +283,81 @@ button {
     scroll-behavior: smooth;
   }
 
-  .turbine-spin {
-    animation: turbineSpin 28s linear infinite;
-    transform-box: fill-box;
-    transform-origin: center;
+  /* Layers that Candlelight shifts with the pointer ease after it. */
+  [data-shift] {
+    transition: transform 900ms var(--ease-out);
+  }
+  /* Overscan, so neither the pointer shift nor the scroll drift bares an edge. */
+  .hero-art {
+    scale: 1.04;
+    animation: settle 1800ms var(--ease-out) both;
+  }
+  .etching img {
+    scale: 1.16;
   }
 
-  .compass-spin {
-    animation: compassSpin 45s linear infinite reverse;
-    transform-box: fill-box;
-    transform-origin: center;
+  /* A gate opens: the gilded drawing develops and the numeral settles as the title rises. */
+  .etching {
+    transition: opacity 1400ms var(--ease-out);
+  }
+  .etching:has(+ [data-reveal="hidden"]) {
+    opacity: 0;
+    transition: none;
+  }
+  .numeral {
+    transition:
+      scale 1100ms var(--ease-out),
+      transform 900ms var(--ease-out);
+  }
+  [data-reveal="hidden"] .numeral {
+    scale: 1.12;
   }
 
-  .circuit-flow {
-    stroke-dasharray: 10 6;
-    animation: circuitFlow 2.6s linear infinite;
+  /* Relics in the margins: a slow bob or turn; the duration is set per relic in page.tsx. */
+  .relic-bob {
+    animation: bob 12s ease-in-out infinite alternate;
+  }
+  .relic-turn {
+    animation: turn 120s linear infinite;
   }
 
-  .waterfall-stream {
-    animation: waterfallFlow 1.6s linear infinite;
+  /* A newly picked project's bars grow in again. backwards, so the reveal transition below still owns them afterwards. */
+  .panel-swap .bar {
+    animation: grow 600ms var(--ease-out) backwards;
+    animation-delay: calc(150ms + var(--i, 0) * 40ms);
   }
 
-  .orb-float {
-    animation: orbFloat 6s ease-in-out infinite;
-    animation-delay: var(--float-delay, 0s);
+  .tile::before {
+    transition: scale 900ms var(--ease-out) calc(var(--i, 0) * 70ms + 250ms);
+  }
+  [data-reveal="hidden"].tile::before {
+    scale: 0 1;
+    transition: none;
   }
 
-  .jet-pulse {
-    animation: jetPulse 2.4s ease-in-out infinite;
-    animation-delay: var(--jet-delay, 0s);
-    transform-box: fill-box;
-    transform-origin: bottom center;
-  }
-
-  .cloud-drift {
-    animation: cloudDrift 16s ease-in-out infinite;
-    animation-delay: var(--drift-delay, 0s);
-  }
-
-  .beam-shimmer {
-    animation: beamShimmer 7s ease-in-out infinite;
+  /* Scroll-linked depth where the browser supports it; static everywhere else. */
+  @supports (animation-timeline: view()) {
+    .progress {
+      animation: progress linear both;
+      animation-timeline: scroll(root);
+    }
+    .etching img {
+      animation: gate-drift linear both;
+      animation-timeline: view();
+    }
+    .hero-art {
+      animation:
+        settle 1800ms var(--ease-out) both,
+        drift linear both;
+      animation-timeline: auto, scroll(root);
+      animation-range-start: normal, 0px;
+      animation-range-end: normal, 50rem;
+    }
+    .panorama-art {
+      animation: dolly linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 55%;
+    }
   }
 
   .panel-swap {
@@ -292,7 +421,8 @@ button {
 }
 
 [data-reveal="hidden"],
-[data-reveal="hidden"] .bar {
+[data-reveal="hidden"] .bar,
+[data-reveal="hidden"] .numeral {
   transition: none;
 }
 
@@ -303,17 +433,15 @@ button {
     transform: none !important;
     clip-path: none !important;
   }
+  .etching:has(+ [data-reveal="hidden"]) {
+    opacity: 0.9 !important;
+  }
+  [data-reveal="hidden"] .numeral {
+    scale: none !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .turbine-spin,
-  .compass-spin,
-  .circuit-flow,
-  .waterfall-stream,
-  .orb-float,
-  .jet-pulse,
-  .cloud-drift,
-  .beam-shimmer,
   .panel-swap,
   .hero-in,
   .plot-lines {

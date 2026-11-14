@@ -17,9 +17,9 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ali Noor — Codex · AI/ML & Software Engineering",
+  title: "Ali Noor · Machine Learning & Software Engineering",
   description:
-    "Machine learning research, deterministic AI agents, LLM security, and first-principles software engineering by Ali Noor, a computer science undergraduate at COMSATS University Islamabad.",
+    "Machine learning research, deterministic AI agents, LLM security and backend engineering by Ali Noor, a computer science undergraduate at COMSATS University Islamabad, Wah Campus.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

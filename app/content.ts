@@ -85,7 +85,7 @@ export const sections: { title: string; intro: string; projects: Project[] }[] =
         name: "Why weight decay causes grokking",
         context: "Replication of Power et al. (2022)",
         summary:
-          "I trained a 2-layer transformer on modular division and swept the weight decay. Too little and the model only memorizes. Too much and it can't fit the training set at all. At the right setting, the weight norm falls from about 87 to under 30 at the same steps where validation accuracy jumps from chance to 100%. The chart at the top of this page is that result.",
+          "I trained a 2-layer transformer on modular division and swept the weight decay. Too little and the model only memorizes. Too much and it can't fit the training set at all. At the right setting, the weight norm falls from about 87 to under 30 at the same steps where validation accuracy jumps from chance to 100%.",
         // Final validation accuracy per setting, from the sweep table in the repo's README
         bars: {
           caption: "Final validation accuracy by weight decay, after 6,000 steps",
@@ -193,6 +193,14 @@ export const earlier: [name: string, detail: string, href: string][] = [
   ["Gym management system", "Python", "https://github.com/alinoor4/gym-management-repo"],
   ["Food ordering database", "T-SQL", "https://github.com/alinoor4/food-ordering-database-repo"],
 ];
+
+// "A, B and C" -> ["A", "B", "C"]
+export function splitTools(items: string): string[] {
+  return items
+    .split(/,\s+|\s+and\s+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
 export const tools: [group: string, items: string][] = [
   ["Languages", "Python, TypeScript, JavaScript, Java, C and C++"],
